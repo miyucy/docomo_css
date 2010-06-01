@@ -1,3 +1,4 @@
+require 'uri'
 require 'nokogiri'
 require 'tiny_css'
 
@@ -17,17 +18,17 @@ module DocomoCss
     def after(controller)
       return unless controller.response.content_type == 'application/xhtml+xml'
       body = escape_numeric_character_reference controller.response.body
-      body = embed_css remove_xml_declare(body)
+      body = embed_css body
       controller.response.body = unescape_numeric_character_reference body
     end
 
     def embed_css(body)
-      doc = Nokogiri::HTML(body)
+      doc = Nokogiri::HTML(remove_xml_declare body)
 
       stylesheet_link_node(doc).each do |linknode|
         href = linknode['href'] or next
 
-        next unless FileTest.exist? css_path(href)
+        next unless FileTest.file? css_path(href)
         css = TinyCss.new.read(css_path(href))
         embed_pseudo_style(doc, extract_pseudo_style(css))
         embed_style(doc, css)
@@ -77,7 +78,7 @@ module DocomoCss
     end
 
     def css_path(href)
-      File.join(Rails.root, 'public', href.gsub(/\?\d+/, ''))
+      File.join(Rails.root, 'public', URI(href).path)
     end
 
     def extract_pseudo_style(css)
