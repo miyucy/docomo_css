@@ -23,7 +23,7 @@ module DocomoCss
     end
 
     def embed_css(body)
-      doc = Nokogiri::HTML(remove_xml_declare body)
+      doc = Nokogiri::HTML(remove_xml_declare(body), nil, "Windows-31J")
 
       stylesheet_link_node(doc).each do |linknode|
         href = linknode['href'] or next
@@ -33,13 +33,11 @@ module DocomoCss
         embed_pseudo_style(doc, extract_pseudo_style(css))
         embed_style(doc, css)
       end
-      xml_declare(doc) + doc.to_xhtml(:indent => 0)
+      xml_declare(doc) + doc.to_xhtml(:indent => 0, :encoding => "Windows-31J")
     end
 
     def xml_declare(doc)
-      <<-XML
-<?xml version="1.0" encoding="#{doc.encoding}"?>
-      XML
+      '<?xml version="1.0" encoding="Shift_JIS"?>' + "\n"
     end
 
     def remove_xml_declare(body)

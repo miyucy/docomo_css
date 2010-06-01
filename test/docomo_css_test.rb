@@ -138,13 +138,8 @@ a:visited { color: blue; }
 
   def test_xml_declare
     doc = stub("doc", :encoding => "Shift_JIS")
-    assert_equal <<-XML, @filter.xml_declare(doc)
+    assert_equal <<-XML, @filter.xml_declare
 <?xml version="1.0" encoding="Shift_JIS"?>
-    XML
-
-    doc = stub("doc", :encoding => "UTF-8")
-    assert_equal <<-XML, @filter.xml_declare(doc)
-<?xml version="1.0" encoding="UTF-8"?>
     XML
   end
 
